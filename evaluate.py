@@ -58,6 +58,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--stage", type=int, default=1, help="Stage number (default: 1)")
     parser.add_argument("--stochastic", action="store_true", help="Sample actions stochastically instead of argmax")
     parser.add_argument("--no-video", action="store_true", help="Disable recording mp4 videos")
+    parser.add_argument("--save-video", action="store_true", default=True, help="Record mp4 videos (enabled by default)")
     parser.add_argument("--video-dir", type=str, default="./eval_videos", help="Directory to save mp4 videos")
     parser.add_argument("--device", type=str, default=None, help="Device to use ('cuda' or 'cpu')")
     return parser.parse_args()

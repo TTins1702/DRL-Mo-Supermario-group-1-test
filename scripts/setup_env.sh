@@ -15,10 +15,7 @@ fi
 echo "=== [2/4] Ensuring build tools and pip are up to date ==="
 python -m pip install --upgrade pip setuptools wheel
 
-echo "=== [3/4] Installing pinned numpy < 2.0 first to avoid nes-py C-API breakage ==="
-pip install "numpy==1.26.4"
-
-echo "=== [4/4] Installing remaining dependencies from requirements.txt ==="
+echo "=== [3/4] Installing all dependencies from requirements.txt (locked numpy==1.26.4) ==="
 pip install -r requirements.txt
 
 echo "=== [Verification] Testing core imports ==="
