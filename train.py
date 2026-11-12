@@ -179,6 +179,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--exp-name", type=str, default=None, help="Experiment name")
     parser.add_argument("--wandb", action="store_true", help="Enable WandB logging")
     parser.add_argument("--wandb-project", type=str, default=None, help="WandB project name")
+    parser.add_argument("--wandb-entity", type=str, default=None, help="WandB team or user entity")
     parser.add_argument("--wandb-run-name", type=str, default=None, help="WandB run name")
     parser.add_argument("--save-freq", type=int, default=None, help="Updates between checkpoint saves")
     parser.add_argument("--eval-freq", type=int, default=None, help="Updates between evaluations")
@@ -207,6 +208,8 @@ def main() -> None:
         overrides["logging.use_wandb"] = True
     if args.wandb_project is not None:
         overrides["logging.wandb_project"] = args.wandb_project
+    if args.wandb_entity is not None:
+        overrides["logging.wandb_entity"] = args.wandb_entity
     if args.save_freq is not None:
         overrides["logging.save_freq_updates"] = args.save_freq
     if args.eval_freq is not None:
@@ -320,6 +323,7 @@ def main() -> None:
         use_tensorboard=bool(log_cfg.get("use_tensorboard", True)),
         use_wandb=bool(log_cfg.get("use_wandb", False)),
         wandb_project=str(log_cfg.get("wandb_project", "mo-supermario-group-1")),
+        wandb_entity=log_cfg.get("wandb_entity", None),
         wandb_run_name=args.wandb_run_name,
         config=dict(cfg),
     )
