@@ -1,0 +1,64 @@
+exp_name: "bonus_multistage"
+seed: 42
+torch_deterministic: true
+cuda: true
+
+# Environment configuration (Phân hệ 1)
+env:
+  world: 1
+  stage: 1                     # Default initial stage (supports multi-stage evaluation)
+  stages:                      # Multi-stage list for curriculum or round-robin training
+    - [1, 1]
+    - [1, 2]
+    - [1, 3]
+    - [1, 4]
+  num_envs: 8
+  action_type: "speedrun"
+  skip_frames: 4
+  stack_frames: 4
+  frame_size: [84, 84]
+  scale_components: [0.05, 0.05, 0.08, 0.01, 0.02]
+  use_milestone: true
+  beta_milestone: 0.1
+  use_anti_stuck: true
+  beta_stuck: 0.1
+  stuck_steps: 60
+
+# Model architecture (Phân hệ 2)
+model:
+  in_channels: 4
+  action_dim: 7
+  feature_dim: 512
+  critic_dim: 5
+
+# MO-PPO Agent & Hyperparameters (Phân hệ 3)
+agent:
+  total_timesteps: 3000000     # Longer horizon for multi-stage curriculum
+  num_steps: 512
+  update_epochs: 4
+  mini_batch_size: 256
+  learning_rate: 0.0002
+  lr_end: 0.00001
+  anneal_lr: true
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_coef: 0.2
+  clip_vloss: false
+  ent_coef: 0.01
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  norm_adv_per_obj: true
+  # Balanced multi-stage weights
+  # [x_pos, time, death, coin, enemy]
+  weights: [0.65, 0.10, 0.20, 0.02, 0.03]
+
+# Checkpointing & Evaluation (Phân hệ 4)
+logging:
+  save_freq_updates: 25
+  eval_freq_updates: 25
+  eval_episodes: 16            # 4 episodes per stage across 4 stages
+  log_freq_updates: 1
+  use_tensorboard: true
+  use_wandb: false
+  wandb_project: "mo-supermario-group-1"
+  wandb_entity: null

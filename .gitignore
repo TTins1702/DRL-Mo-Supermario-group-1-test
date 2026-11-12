@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+
+# Pytest / Cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Tensorboard / Weights & Biases / Logs
+logs/
+wandb/
+
+# Checkpoints & Model weights
+checkpoints/
+*.pt
+*.pth
+
+# Rendered Evaluation Videos
+eval_videos/
+*.mp4

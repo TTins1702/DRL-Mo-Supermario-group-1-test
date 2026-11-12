@@ -1,0 +1,59 @@
+exp_name: "bonus_speedrun"
+seed: 42
+torch_deterministic: true
+cuda: true
+
+# Environment configuration (Phân hệ 1)
+env:
+  world: 1
+  stage: 1
+  num_envs: 8
+  action_type: "speedrun"      # Discrete(7) Speedrun actions
+  skip_frames: 4
+  stack_frames: 4
+  frame_size: [84, 84]
+  scale_components: [0.05, 0.05, 0.08, 0.01, 0.02]
+  use_milestone: true
+  beta_milestone: 0.1
+  use_anti_stuck: true
+  beta_stuck: 0.1
+  stuck_steps: 60
+
+# Model architecture (Phân hệ 2)
+model:
+  in_channels: 4
+  action_dim: 7
+  feature_dim: 512
+  critic_dim: 5
+
+# MO-PPO Agent & Hyperparameters (Phân hệ 3)
+agent:
+  total_timesteps: 1000000     # Fine-tuning timesteps
+  num_steps: 512               # Rollout steps per env
+  update_epochs: 4             # PPO epochs per update
+  mini_batch_size: 256         # Mini-batch size
+  learning_rate: 0.0001        # Lower learning rate for fine-tuning
+  lr_end: 0.00001
+  anneal_lr: true
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_coef: 0.2
+  clip_vloss: false
+  ent_coef: 0.005              # Lower entropy for sharper speedrun exploitation
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  norm_adv_per_obj: true
+  # Speedrun weights: heavily penalize elapsed time to encourage maximum sprint speed
+  # [x_pos, time, death, coin, enemy]
+  weights: [0.40, 0.40, 0.15, 0.02, 0.03]
+
+# Checkpointing & Evaluation (Phân hệ 4)
+logging:
+  save_freq_updates: 25
+  eval_freq_updates: 20
+  eval_episodes: 15
+  log_freq_updates: 1
+  use_tensorboard: true
+  use_wandb: false
+  wandb_project: "mo-supermario-group-1"
+  wandb_entity: null
