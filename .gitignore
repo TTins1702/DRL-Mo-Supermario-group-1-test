@@ -4,8 +4,10 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
-venv/
+# Virtual Environments (root only)
+/env/
+/venv/
+/.venv/
 .env
 
 # Pytest / Cache
