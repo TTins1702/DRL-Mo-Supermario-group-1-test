@@ -471,6 +471,7 @@ def make_mario_env(
     beta_milestone: float = 0.0,
     beta_stuck: float = 0.0,
     stuck_steps: int = 60,
+    max_stuck_steps: Optional[int] = None,
     death_as_penalty: bool = False,
 ) -> gym.Env:
     """Create a fully wrapped Super Mario Bros environment for Multi-Objective RL.
@@ -503,6 +504,7 @@ def make_mario_env(
         beta_milestone=beta_milestone,
         beta_stuck=beta_stuck,
         stuck_steps=stuck_steps,
+        max_stuck_steps=max_stuck_steps,
     )
     return env
 
@@ -519,6 +521,7 @@ def make_mario_vector_env(
     beta_milestone: float = 0.0,
     beta_stuck: float = 0.0,
     stuck_steps: int = 60,
+    max_stuck_steps: Optional[int] = None,
     death_as_penalty: bool = False,
 ) -> MOSyncVectorEnv:
     """Create a synchronous vectorized environment running `num_envs` Mario instances.
@@ -539,6 +542,7 @@ def make_mario_vector_env(
             beta_milestone=beta_milestone,
             beta_stuck=beta_stuck,
             stuck_steps=stuck_steps,
+            max_stuck_steps=max_stuck_steps,
             death_as_penalty=death_as_penalty,
         )
 

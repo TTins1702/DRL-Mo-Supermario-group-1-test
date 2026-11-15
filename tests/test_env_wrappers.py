@@ -257,6 +257,40 @@ def test_anti_stuck_penalty():
     assert pytest.approx(r2[0]) == -0.25
 
 
+def test_anti_stuck_truncation():
+    class StuckEnv(gym.Env):
+        def __init__(self):
+            self.action_space = spaces.Discrete(7)
+            self.observation_space = spaces.Box(0, 255, shape=(84, 84), dtype=np.uint8)
+            self.reward_space = spaces.Box(-np.inf, np.inf, shape=(5,), dtype=np.float32)
+
+        def reset(self, **kwargs):
+            return np.zeros((84, 84), dtype=np.uint8), {"x_pos": 100}
+
+        def step(self, action):
+            return np.zeros((84, 84), dtype=np.uint8), np.zeros(5, dtype=np.float32), False, False, {"x_pos": 100}
+
+    wrapper = MultiObjectiveRewardWrapper(
+        StuckEnv(),
+        scaling=[1.0, 1.0, 1.0, 1.0, 1.0],
+        beta_milestone=0.0,
+        beta_stuck=0.1,
+        stuck_steps=2,
+        max_stuck_steps=3,
+    )
+
+    wrapper.reset()
+    _, _, term1, trunc1, _ = wrapper.step(0)
+    assert not term1 and not trunc1
+
+    _, _, term2, trunc2, _ = wrapper.step(0)
+    assert not term2 and not trunc2
+
+    _, r3, term3, trunc3, _ = wrapper.step(0)
+    assert not term3 and trunc3
+    assert pytest.approx(r3[0]) == -0.1
+
+
 # =============================================================================
 # Vector Environment Tests
 # =============================================================================

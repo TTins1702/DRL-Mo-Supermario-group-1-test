@@ -66,9 +66,10 @@ def evaluate_policy(
     record_best_video: bool = False,
     video_dir: Optional[str] = None,
     step_num: int = 0,
+    max_stuck_steps: Optional[int] = None,
 ) -> Dict[str, Any]:
     """Run standalone evaluation on a single environment instance."""
-    eval_env = make_mario_env(world=world, stage=stage)
+    eval_env = make_mario_env(world=world, stage=stage, max_stuck_steps=max_stuck_steps)
     wins = 0
     max_x_list: List[float] = []
     completion_times: List[float] = []
@@ -250,6 +251,8 @@ def main() -> None:
     beta_milestone = float(env_cfg.get("beta_milestone", 0.1 if env_cfg.get("use_milestone", True) else 0.0))
     beta_stuck = float(env_cfg.get("beta_stuck", 0.1 if env_cfg.get("use_anti_stuck", True) else 0.0))
     stuck_steps = int(env_cfg.get("stuck_steps", 60))
+    raw_max_stuck = env_cfg.get("max_stuck_steps", None)
+    max_stuck_steps = int(raw_max_stuck) if raw_max_stuck is not None else None
 
     logger.info("Initializing %d parallel environments for World %d-%d...", num_envs, world, stage)
     envs = make_mario_vector_env(
@@ -262,6 +265,7 @@ def main() -> None:
         beta_milestone=beta_milestone,
         beta_stuck=beta_stuck,
         stuck_steps=stuck_steps,
+        max_stuck_steps=max_stuck_steps,
     )
 
     # 4. Model Architecture & Optimizer
@@ -462,6 +466,7 @@ def main() -> None:
                     record_best_video=True,
                     video_dir=video_out_dir,
                     step_num=global_step,
+                    max_stuck_steps=max_stuck_steps,
                 )
                 logger_inst.log_eval(global_step=global_step, eval_metrics=eval_stats)
 

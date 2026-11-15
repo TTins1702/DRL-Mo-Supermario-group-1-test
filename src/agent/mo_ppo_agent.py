@@ -154,8 +154,8 @@ class MOPPOAgent:
         self.vf_coef = float(self.config.get("vf_coef", vf_coef))
         self.max_grad_norm = float(self.config.get("max_grad_norm", max_grad_norm))
         self.update_epochs = int(self.config.get("update_epochs", update_epochs))
-        self.batch_size = int(self.config.get("batch_size", batch_size))
-        self.norm_adv = bool(self.config.get("norm_adv", norm_adv))
+        self.batch_size = int(self.config.get("batch_size", self.config.get("mini_batch_size", batch_size)))
+        self.norm_adv = bool(self.config.get("norm_adv", self.config.get("norm_adv_per_obj", norm_adv)))
         self.clip_vloss = bool(self.config.get("clip_vloss", clip_vloss))
         self.target_kl = self.config.get("target_kl", target_kl)
         if self.target_kl is not None:

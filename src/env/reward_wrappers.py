@@ -29,6 +29,7 @@ class MultiObjectiveRewardWrapper(gym.Wrapper):
         beta_milestone: float = 0.0,
         beta_stuck: float = 0.0,
         stuck_steps: int = 60,
+        max_stuck_steps: Optional[int] = None,
     ):
         super().__init__(env)
         if scaling is None:
@@ -41,6 +42,7 @@ class MultiObjectiveRewardWrapper(gym.Wrapper):
         self.beta_milestone = float(beta_milestone)
         self.beta_stuck = float(beta_stuck)
         self.stuck_steps = int(stuck_steps)
+        self.max_stuck_steps = int(max_stuck_steps) if max_stuck_steps is not None else None
 
         self.reward_space = spaces.Box(
             low=-np.inf,
@@ -89,7 +91,12 @@ class MultiObjectiveRewardWrapper(gym.Wrapper):
 
         # 3. Milestone and Anti-Stuck Shaping (applied to dimension 0: x_pos)
         curr_x = float(info.get("x_pos", self.max_x_pos))
-        if self.beta_milestone > 0.0 or self.beta_stuck > 0.0:
+        track_stuck = (
+            self.beta_milestone > 0.0
+            or self.beta_stuck > 0.0
+            or (self.max_stuck_steps is not None and self.max_stuck_steps > 0)
+        )
+        if track_stuck:
             if curr_x > self.max_x_pos:
                 if self.beta_milestone > 0.0:
                     scaled_r[0] += float(self.beta_milestone)
@@ -99,6 +106,12 @@ class MultiObjectiveRewardWrapper(gym.Wrapper):
                 self.stuck_counter += 1
                 if self.beta_stuck > 0.0 and self.stuck_counter >= self.stuck_steps:
                     scaled_r[0] -= float(self.beta_stuck)
+                if (
+                    self.max_stuck_steps is not None
+                    and self.max_stuck_steps > 0
+                    and self.stuck_counter >= self.max_stuck_steps
+                ):
+                    truncated = True
         else:
             if curr_x > self.max_x_pos:
                 self.max_x_pos = curr_x

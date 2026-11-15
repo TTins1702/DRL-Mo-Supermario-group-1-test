@@ -14,10 +14,11 @@ env:
   frame_size: [84, 84]
   scale_components: [0.05, 0.05, 0.08, 0.01, 0.02]
   use_milestone: true
-  beta_milestone: 0.1
+  beta_milestone: 0.15
   use_anti_stuck: true
   beta_stuck: 0.1
   stuck_steps: 60
+  max_stuck_steps: 150         # Truncate episode if stuck for 150 steps (~600 NES frames) to avoid wasting rollout buffer
 
 # Model architecture (Phân hệ 2)
 model:
@@ -39,7 +40,7 @@ agent:
   gae_lambda: 0.95             # GAE lambda
   clip_coef: 0.2               # PPO clip threshold epsilon
   clip_vloss: false
-  ent_coef: 0.01               # Entropy bonus coefficient
+  ent_coef: 0.025              # Entropy bonus coefficient (encourages multi-step jump exploration over 4-block walls)
   vf_coef: 0.5                 # Value function coefficient
   max_grad_norm: 0.5           # Gradient clipping norm
   norm_adv_per_obj: true       # Independent normalization for each 5D objective advantage
