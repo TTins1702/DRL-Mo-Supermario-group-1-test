@@ -623,7 +623,7 @@ class MOPPOAgent:
         if not load_path.exists():
             raise FileNotFoundError(f"Checkpoint file not found: {load_path}")
 
-        checkpoint = torch.load(load_path, map_location=self.device)
+        checkpoint = torch.load(load_path, map_location=self.device, weights_only=False)
 
         # Restore network weights
         if "network_state_dict" in checkpoint:

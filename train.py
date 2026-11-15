@@ -12,7 +12,7 @@ import os
 import random
 import time
 from collections import deque
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import torch
@@ -489,8 +489,8 @@ def main() -> None:
             # --- PERIODIC SAVE (LATEST.PT) ---
             elif update % save_freq == 0:
                 current_metrics = {
-                    "win_rate": np.mean(rollout_wins) if rollout_wins else 0.0,
-                    "avg_x_pos": np.mean(rollout_x_pos) if rollout_x_pos else 0.0,
+                    "win_rate": float(np.mean(rollout_wins)) if rollout_wins else 0.0,
+                    "avg_x_pos": float(np.mean(rollout_x_pos)) if rollout_x_pos else 0.0,
                 }
                 ckpt_manager.save_checkpoint(
                     network=network,

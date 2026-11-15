@@ -144,7 +144,7 @@ class CheckpointManager:
         """Load checkpoint dictionary from disk."""
         if not os.path.exists(filepath):
             raise FileNotFoundError(f"Checkpoint file does not exist: {filepath}")
-        return torch.load(filepath, map_location=self.device)
+        return torch.load(filepath, map_location=self.device, weights_only=False)
 
     def resume(
         self,

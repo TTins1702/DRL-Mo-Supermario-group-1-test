@@ -1,9 +1,16 @@
 # Pinned dependencies for MO-PPO Super Mario (Group 1)
-# CRITICAL: numpy MUST be < 2.0 to maintain compatibility with nes-py 8.2.1 and gym-super-mario-bros 7.4.0
-numpy==1.26.4
-nes-py==8.2.1
-gym-super-mario-bros==7.4.0
-gymnasium>=0.29.0,<1.0.0
+# Python >= 3.13 (Kaggle, modern local): nes-py >= 9.0.1 & gym-super-mario-bros >= 9.1.0 support NumPy 2.x and Gymnasium >= 1.0 natively.
+# Python < 3.13 (e.g., Colab): nes-py 8.2.1 requires numpy == 1.26.4 (< 2.0) and gymnasium < 1.0.
+numpy>=1.26.4; python_version >= "3.13"
+nes-py>=9.0.1; python_version >= "3.13"
+gym-super-mario-bros>=9.1.0; python_version >= "3.13"
+gymnasium>=1.0.0; python_version >= "3.13"
+
+numpy==1.26.4; python_version < "3.13"
+nes-py==8.2.1; python_version < "3.13"
+gym-super-mario-bros==7.4.0; python_version < "3.13"
+gymnasium>=0.29.0,<1.0.0; python_version < "3.13"
+
 mo-gymnasium>=1.0.0
 
 # Deep Learning (PyTorch)

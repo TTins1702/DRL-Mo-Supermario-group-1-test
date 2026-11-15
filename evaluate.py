@@ -85,7 +85,7 @@ def run_evaluation(
     logger.info("Evaluating on device: %s", device)
 
     # 1. Load Checkpoint
-    ckpt = torch.load(checkpoint_path, map_location=device)
+    ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
     saved_cfg = ckpt.get("config", {})
 
     if config_path and os.path.exists(config_path):

@@ -44,11 +44,11 @@ def _draw_hud(
     cv2.addWeighted(overlay, 0.75, annotated, 0.25, 0, annotated)
 
     # Info text formatting
-    x_pos = info.get("x_pos", 0) if info else 0
-    game_time = info.get("time", 0) if info else 0
-    coins = info.get("coins", 0) if info else 0
-    score = info.get("score", 0) if info else 0
-    flag_get = info.get("flag_get", False) if info else False
+    x_pos = int(info.get("x_pos", 0)) if info else 0
+    game_time = int(info.get("time", 0)) if info else 0
+    coins = int(info.get("coins", 0)) if info else 0
+    score = int(info.get("score", 0)) if info else 0
+    flag_get = bool(info.get("flag_get", False)) if info else False
 
     status = "CLEAR!" if flag_get else "RUNNING"
     status_color = (0, 255, 0) if flag_get else (255, 255, 255)
@@ -133,7 +133,18 @@ def save_episode_video(
         frame_with_hud = _draw_hud(curr_frame, idx, info_for_step)
         processed_frames.append(frame_with_hud)
 
-    # Attempt OpenCV VideoWriter first
+    # Attempt imageio (H.264 / libx264) first so videos play reliably in browsers/Kaggle/WandB
+    if HAS_IMAGEIO:
+        try:
+            with imageio.get_writer(filepath, fps=fps, codec="libx264", macro_block_size=1) as writer:
+                for f in processed_frames:
+                    writer.append_data(f)
+            logger.info("Successfully saved video using imageio (libx264): %s (%d frames)", filepath, len(frames))
+            return filepath
+        except Exception as io_err:
+            logger.warning("imageio failed to write video: %s. Trying OpenCV fallback.", io_err)
+
+    # Fallback to OpenCV VideoWriter
     if HAS_CV2:
         try:
             # OpenCV expects BGR
@@ -146,18 +157,7 @@ def save_episode_video(
             logger.info("Successfully saved video using OpenCV: %s (%d frames)", filepath, len(frames))
             return filepath
         except Exception as cv_err:
-            logger.warning("OpenCV VideoWriter failed: %s. Trying imageio fallback.", cv_err)
-
-    # Fallback to imageio
-    if HAS_IMAGEIO:
-        try:
-            with imageio.get_writer(filepath, fps=fps, codec="libx264") as writer:
-                for f in processed_frames:
-                    writer.append_data(f)
-            logger.info("Successfully saved video using imageio: %s", filepath)
-            return filepath
-        except Exception as io_err:
-            logger.error("imageio failed to write video: %s", io_err)
+            logger.error("OpenCV VideoWriter failed: %s", cv_err)
 
     logger.error("Failed to write video: Neither OpenCV nor imageio succeeded.")
     return ""
